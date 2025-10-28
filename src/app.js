@@ -1,11 +1,13 @@
 const express = require("express");
 const app = express();
-const sequelize = require(".config/database");
+const sequelize = require("./config/database");
 const productoRoutes = require("./routes/producto.route");
+const categoriaRoutes = require("./routes/categoria.route");
 require("dotenv").config();
 app.use(express.json());
 
-app.use(productoRoutes);
+app.use("/api/productos", productoRoutes);
+app.use("/api/categorias", categoriaRoutes);
 
 (async () => {
   await sequelize.authenticate();
