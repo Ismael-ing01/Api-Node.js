@@ -7,6 +7,7 @@ const Producto = sequelize.define("Producto", {
   nombre: { type: DataTypes.STRING, allowNull: false },
   precio: { type: DataTypes.FLOAT, allowNull: false },
   stock: { type: DataTypes.INTEGER, allowNull: false },
+  descripcion: { type: DataTypes.STRING, allowNull: false },
 });
 
 Categoria.hasMany(Producto, { foreignKey: "categoriaId", as: "productos" });
