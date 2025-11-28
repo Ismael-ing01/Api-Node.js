@@ -1,87 +1,142 @@
-# Guia Practica
+# API REST Node.js - Gestión de Productos
 
-Esta es la guia practica de esta api sencilla de productos desarrollada con Node.js con endopints http
+API RESTful desarrollada con Node.js para la gestión de productos y categorías, incluyendo un sistema completo de autenticación.
 
-- Post
+## 🛠️ Tecnologías
 
-```
-Crea un nuevo produto
-```
+- **Node.js**: Entorno de ejecución.
+- **Express**: Framework web.
+- **Sequelize**: ORM para base de datos SQL.
+- **MySQL**: Base de datos relacional.
+- **JWT (JsonWebToken)**: Manejo de sesiones y seguridad.
+- **Bcrypt**: Encriptación de contraseñas.
 
-- Get
+## 📋 Requisitos Previos
 
-```
-Lista todos los productos
-```
+- Node.js (v14 o superior)
+- MySQL Server
 
-- Delete
+## ⚙️ Configuración del Entorno
 
-```
-Elimina un producto
-```
+Crea un archivo `.env` en la raíz del proyecto basándote en el siguiente ejemplo:
 
-- Put
-
-```
-Actuliaza un producto
-```
-
-## Para poder correr el programa se ejecuta el siguiente codigo desde la temianal
-
-```
-npm run dev
+```env
+PORT=3000
+DB_NAME=nombre_base_datos
+DB_USER=usuario_mysql
+DB_PASSWORD=contraseña_mysql
+DB_HOST=localhost
+DB_PORT=3306
+JWT_SECRET=tu_clave_secreta_super_segura
 ```
 
-## Para probar la API vamos a utilizar Postman en donde especificaremos las diferentes rutas para probar cada endpoind
+## 🚀 Instalación y Ejecución
 
-# Productos
+1.  **Instalar dependencias:**
+    ```bash
+    npm install
+    ```
 
-### URL para crear un producto
+2.  **Ejecutar en desarrollo:**
+    ```bash
+    npm run dev
+    ```
 
-```
-localhost:3000/api/productos/crear
-```
+## 📚 Documentación de la API
 
-### URL para Listar un producto
+### 🔐 Autenticación
 
-```
-localhost:3000/api/productos/listar
-```
+#### Registrar Usuario
+`POST /api/auth/register`
 
-### URL para actualizar un producto
-
-```
-localhost:3000/api/productos/actualizar/id
-```
-
-### URL para eliminar un producto
-
-```
-localhost:3000/api/productos/eliminar/id
-```
-
-# Categoria
-
-### URL para crear un categoria
-
-```
-localhost:3000/api/categorias/crear
+**Body:**
+```json
+{
+  "nombre": "Juan Perez",
+  "correo": "juan@example.com",
+  "password": "password123"
+}
 ```
 
-### URL para Listar un categoria
+#### Iniciar Sesión
+`POST /api/auth/login`
 
+**Body:**
+```json
+{
+  "correo": "juan@example.com",
+  "password": "password123"
+}
 ```
-localhost:3000/api/categorias/listar
+**Respuesta Exitosa (200):** Devuelve un token JWT y establece una cookie `refreshToken`.
+
+#### Refrescar Token
+`POST /api/auth/refresh-token`
+Requiere cookie `refreshToken` válida.
+
+#### Cerrar Sesión
+`POST /api/auth/logout`
+
+---
+
+### 📦 Productos
+
+#### Crear Producto
+`POST /api/productos/crear`
+
+**Body:**
+```json
+{
+  "nombre": "Laptop Gamer",
+  "precio": 1500.00,
+  "stock": 10,
+  "descripcion": "Laptop de alta gama",
+  "categoriaId": 1
+}
 ```
 
-### URL para actualizar un categoria
+#### Listar Productos
+`GET /api/productos/listar`
 
-```
-localhost:3000/api/categorias/actualizar/id
+#### Actualizar Producto
+`PUT /api/productos/actualizar/:id`
+
+**Body:**
+```json
+{
+  "precio": 1400.00,
+  "stock": 8
+}
 ```
 
-### URL para eliminar un categoria
+#### Eliminar Producto
+`DELETE /api/productos/eliminar/:id`
 
+---
+
+### 🏷️ Categorías
+
+#### Crear Categoría
+`POST /api/categorias/crear`
+
+**Body:**
+```json
+{
+  "nombre": "Electrónica",
+  "descripcion": "Dispositivos electrónicos y gadgets"
+}
 ```
-localhost:3000/api/categorias/eliminar/id
-```
+
+#### Listar Categorías
+`GET /api/categorias/listar`
+
+#### Actualizar Categoría
+`PUT /api/categorias/actualizar/:id`
+
+#### Eliminar Categoría
+`DELETE /api/categorias/eliminar/:id`
+
+## 🧪 Pruebas
+
+Utiliza **Postman** o **Insomnia** para probar los endpoints.
+> **Nota:** Para los endpoints protegidos (si se implementan middlewares de auth en el futuro), asegúrate de enviar el header `Authorization: Bearer <token>`.
