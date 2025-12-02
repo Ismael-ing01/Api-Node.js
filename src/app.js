@@ -5,6 +5,8 @@ const cookieParser = require("cookie-parser"); // Importa cookie-parser
 const productoRoutes = require("./routes/producto.route");
 const categoriaRoutes = require("./routes/categoria.route");
 const authRoutes = require("./routes/auth.routes");
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('./swagger_output.json');
 require("dotenv").config();
 app.use(express.json());
 app.use(cookieParser());
@@ -12,6 +14,7 @@ app.use(cookieParser());
 app.use("/api/productos", productoRoutes);
 app.use("/api/categorias", categoriaRoutes);
 app.use("/api/auth", authRoutes);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 (async () => {
   await sequelize.authenticate();
