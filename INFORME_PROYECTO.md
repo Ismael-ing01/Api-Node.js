@@ -63,6 +63,30 @@ El sistema procesó la solicitud correctamente y el correo fue entregado en la b
 
 > **[ESPACIO PARA IMAGEN: BANDEJA DE ENTRADA]** > _Inserte aquí una captura del correo recibido, mostrando el asunto y el contenido formateado._
 
-## 5. Conclusión
+## 5. Generación de Reportes PDF
+
+Adicionalmente, se implementó una funcionalidad para generar reportes de inventario en formato PDF y enviarlos por correo.
+
+### 5.1. Tecnologías Adicionales
+
+- **Puppeteer:** Para la generación del PDF a partir de HTML.
+- **Handlebars:** Motor de plantillas para diseñar el reporte.
+- **FS-Extra:** Manejo del sistema de archivos.
+
+### 5.2. Implementación
+
+1.  **Plantilla (`src/templates/report.hbs`):** Se diseñó una tabla HTML con estilos CSS para listar los productos.
+2.  **Servicio (`src/services/pdf.service.js`):** Lógica para consultar la base de datos, compilar la plantilla y generar el buffer del PDF.
+3.  **Endpoint (`/api/email/report`):** Ruta que orquesta la generación y el envío del correo con el adjunto.
+
+> **[ESPACIO PARA IMAGEN: PLANTILLA HBS O SERVICIO PDF]** > _Inserte aquí una captura del código de la plantilla o del servicio._
+
+### 5.3. Verificación
+
+Se realizó una prueba enviando una petición POST a `/api/email/report`. El sistema generó el PDF y lo envió como archivo adjunto.
+
+> **[ESPACIO PARA IMAGEN: CORREO CON PDF ADJUNTO]** > _Inserte aquí la captura del correo recibido donde se vea el archivo PDF adjunto._
+
+## 6. Conclusión
 
 La integración con Resend ha sido exitosa, dotando a la API de la capacidad de enviar notificaciones por correo electrónico de manera eficiente y segura. El código implementado es robusto, incluye validaciones de datos y manejo de errores para asegurar la estabilidad del servicio.

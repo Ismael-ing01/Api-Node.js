@@ -42,7 +42,7 @@ app.listen(PORT, () => {
 (async () => {
   await sequelize.authenticate();
   console.log("Conexion a la base de datos establecida");
-  await sequelize.sync({ alter: true });
+  // await sequelize.sync({ alter: true });
   console.log("Sincronizacion de la base de datos completada");
   app.listen(process.env.PORT, () => {
     console.log(`El servidor esta corriendo en el puerto: ${process.env.PORT}`);

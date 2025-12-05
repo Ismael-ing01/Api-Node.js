@@ -92,4 +92,52 @@ router.post("/send", async (req, res) => {
   }
 });
 
+const { generateProductReport } = require("../services/pdf.service");
+
+router.post("/report", async (req, res) => {
+  try {
+    const { to } = req.body;
+
+    if (!to) {
+      return res.status(400).json({ error: "Falta el destinatario (to)" });
+    }
+
+    console.log("📄 Generando reporte PDF...");
+    const pdfBuffer = await generateProductReport();
+    console.log(`📦 PDF generado. Tamaño: ${pdfBuffer.length} bytes`);
+
+    // DEBUG: Guardar PDF localmente
+    const fs = require("fs");
+    fs.writeFileSync("test_debug.pdf", pdfBuffer);
+    console.log("💾 PDF guardado localmente como test_debug.pdf");
+
+    if (pdfBuffer.length === 0) {
+      throw new Error("El PDF generado está vacío");
+    }
+
+    console.log("📤 Enviando reporte por email...");
+    const { data, error } = await resend.emails.send({
+      from: "Practicas API <onboarding@resend.dev>",
+      to: [to],
+      subject: "Reporte de Inventario - PDF",
+      html: "<p>Adjunto encontrarás el reporte de inventario actualizado.</p>",
+      attachments: [
+        {
+          filename: "reporte-productos.pdf",
+          content: Buffer.from(pdfBuffer),
+        },
+      ],
+    });
+
+    if (error) {
+      return res.status(400).json({ error });
+    }
+
+    res.json({ success: true, message: "Reporte enviado", data });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error interno" });
+  }
+});
+
 module.exports = router;
