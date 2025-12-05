@@ -1,110 +1,68 @@
-# INFORME TÉCNICO: API REST Node.js - Gestión de Productos
+# INFORME TÉCNICO: Módulo de Envío de Correos (Resend)
 
 ## 1. Introducción
 
-El presente informe detalla el desarrollo e implementación de una API RESTful construida con Node.js. Este proyecto tiene como finalidad proporcionar un servicio backend robusto para la gestión de un inventario de productos y categorías, incorporando medidas de seguridad mediante autenticación de usuarios.
+Este informe documenta la implementación del servicio de envío de correos electrónicos transaccionales dentro de la API REST Node.js. Para esta funcionalidad se ha integrado la plataforma **Resend**, que permite una entrega confiable y segura de notificaciones.
 
-La API permite a los clientes (frontend, aplicaciones móviles, etc.) realizar operaciones CRUD (Crear, Leer, Actualizar, Eliminar) sobre los recursos del sistema, garantizando la integridad y persistencia de los datos en una base de datos relacional.
+## 2. Tecnologías Utilizadas
 
-## 2. Objetivos del Proyecto
+- **Node.js & Express:** Entorno de ejecución y framework web.
+- **Resend SDK:** Librería oficial para la integración con el servicio de emails.
+- **Dotenv:** Gestión de variables de entorno para proteger credenciales.
 
-*   **General:** Desarrollar una API escalable y segura para la administración de productos.
-*   **Específicos:**
-    *   Implementar un sistema de autenticación y autorización seguro utilizando JSON Web Tokens (JWT).
-    *   Gestionar el ciclo de vida de productos y categorías (CRUD).
-    *   Utilizar un ORM (Sequelize) para la interacción con la base de datos MySQL.
-    *   Documentar los endpoints de la API para facilitar su consumo.
+## 3. Implementación Paso a Paso
 
-## 3. Tecnologías Utilizadas
+### 3.1. Instalación y Configuración
 
-El proyecto se ha desarrollado utilizando el siguiente stack tecnológico:
+1.  **Instalación de Dependencias:**
+    Se ejecutó el siguiente comando para instalar las librerías necesarias:
 
-*   **Lenguaje:** JavaScript (Node.js v14+).
-*   **Framework Web:** Express.js (v5.1.0) - Para el manejo de rutas y middleware.
-*   **Base de Datos:** MySQL - Sistema de gestión de base de datos relacional.
-*   **ORM:** Sequelize (v6.37.7) - Para modelar y consultar la base de datos usando objetos JavaScript.
-*   **Seguridad:**
-    *   **Bcrypt / Bcryptjs:** Para el hasheo seguro de contraseñas.
-    *   **JsonWebToken (JWT):** Para la generación y validación de tokens de sesión.
-*   **Documentación:** Swagger UI Express - Para visualizar y probar la API interactivamente.
-*   **Herramientas de Desarrollo:** Nodemon, Dotenv.
+    ```bash
+    npm install resend dotenv
+    ```
 
-> **[ESPACIO PARA IMAGEN: LOGOS DE TECNOLOGÍAS O DIAGRAMA DEL STACK]**
-> *Inserte aquí una imagen que muestre los logos de Node, Express, MySQL, etc.*
+2.  **Seguridad (Variables de Entorno):**
+    Se configuró la API Key de Resend en el archivo `.env` para evitar exponer credenciales en el código fuente.
+    ```env
+    RESEND_API_KEY=re_xxxxxxxx...
+    ```
 
-## 4. Arquitectura del Proyecto
+### 3.2. Desarrollo del Endpoint (`/api/email/send`)
 
-El proyecto sigue el patrón de arquitectura **MVC (Modelo-Vista-Controlador)** adaptado a una API REST (donde la "Vista" es la respuesta JSON).
+Se creó el archivo `src/routes/email.route.js` con la lógica necesaria para:
 
-### Estructura de Carpetas
+1.  **Validar la petición:** Verifica que se reciban el destinatario (`to`), asunto (`subject`) y mensaje (`message`).
+2.  **Validar formato:** Comprueba que el email del destinatario sea válido usando expresiones regulares.
+3.  **Construir el HTML:** Genera una plantilla visual con los datos recibidos.
+4.  **Enviar el correo:** Utiliza el método `resend.emails.send()` para procesar el envío.
 
-*   `src/app.js`: Punto de entrada de la aplicación. Configuración del servidor y middlewares globales.
-*   `src/config/`: Archivos de configuración (ej. conexión a base de datos).
-*   `src/models/`: Definición de los modelos de datos (Tablas) usando Sequelize.
-*   `src/controllers/`: Lógica de negocio. Reciben las peticiones, procesan datos y envían respuestas.
-*   `src/routes/`: Definición de los endpoints y asignación a sus respectivos controladores.
-*   `src/middleware/`: Funciones intermedias para validación y autenticación (ej. verificar token).
+> **[ESPACIO PARA IMAGEN: CÓDIGO FUENTE]** > _Inserte aquí una captura del código del archivo `src/routes/email.route.js`._
 
-> **[ESPACIO PARA IMAGEN: ESTRUCTURA DE CARPETAS]**
-> *Inserte aquí una captura de pantalla del árbol de directorios del proyecto en VS Code.*
+## 4. Verificación y Evidencias
 
-## 5. Base de Datos
+Para validar el funcionamiento, se realizaron pruebas utilizando **Postman**.
 
-La persistencia de datos se maneja en MySQL. El esquema principal consta de las siguientes entidades:
+### 4.1. Petición de Prueba
 
-1.  **Usuarios:** Almacena credenciales y datos de perfil.
-2.  **Categorías:** Clasificación de los productos.
-3.  **Productos:** Artículos del inventario, vinculados a una categoría.
+Se envió una petición `POST` a `http://localhost:3000/api/email/send` con el siguiente cuerpo JSON:
 
-> **[ESPACIO PARA IMAGEN: DIAGRAMA ENTIDAD-RELACIÓN (DER)]**
-> *Inserte aquí el diagrama de la base de datos mostrando las tablas y sus relaciones.*
+```json
+{
+  "to": "delivered@resend.dev",
+  "subject": "Prueba de Informe",
+  "message": "Este es un mensaje de prueba para el informe.",
+  "name": "Usuario Test"
+}
+```
 
-## 6. Descripción de la API (Endpoints)
+> **[ESPACIO PARA IMAGEN: POSTMAN]** > _Inserte aquí la captura de Postman mostrando la configuración de la petición y la respuesta exitosa (Status 200)._
 
-A continuación se describen los principales recursos disponibles en la API.
+### 4.2. Recepción del Correo
 
-### 6.1. Autenticación (`/api/auth`)
+El sistema procesó la solicitud correctamente y el correo fue entregado en la bandeja de entrada.
 
-Módulo encargado de la seguridad y gestión de sesiones.
+> **[ESPACIO PARA IMAGEN: BANDEJA DE ENTRADA]** > _Inserte aquí una captura del correo recibido, mostrando el asunto y el contenido formateado._
 
-*   `POST /register`: Registro de nuevos usuarios.
-*   `POST /login`: Inicio de sesión. Retorna Token y Refresh Token.
-*   `POST /refresh-token`: Renovación de tokens expirados.
-*   `POST /logout`: Cierre de sesión.
+## 5. Conclusión
 
-> **[ESPACIO PARA IMAGEN: PRUEBA DE LOGIN EN POSTMAN]**
-> *Inserte aquí una captura de Postman mostrando una petición de Login exitosa y la respuesta con el token.*
-
-### 6.2. Productos (`/api/productos`)
-
-Gestión del inventario.
-
-*   `POST /crear`: Agregar un nuevo producto (Requiere Auth).
-*   `GET /listar`: Obtener todos los productos.
-*   `PUT /actualizar/:id`: Modificar datos de un producto.
-*   `DELETE /eliminar/:id`: Dar de baja un producto.
-
-> **[ESPACIO PARA IMAGEN: JSON DE UN PRODUCTO]**
-> *Inserte aquí una captura de la respuesta JSON al consultar un producto.*
-
-### 6.3. Categorías (`/api/categorias`)
-
-Gestión de las familias de productos.
-
-*   `POST /crear`: Nueva categoría.
-*   `GET /listar`: Ver todas las categorías.
-*   `PUT /actualizar/:id`: Editar categoría.
-*   `DELETE /eliminar/:id`: Borrar categoría.
-
-## 7. Documentación Interactiva (Swagger)
-
-El proyecto incluye documentación autogenerada con Swagger. Esto permite visualizar y probar los endpoints directamente desde el navegador.
-
-*   **Ruta:** `/api-docs` (o la ruta configurada en `swagger.js`).
-
-> **[ESPACIO PARA IMAGEN: INTERFAZ DE SWAGGER UI]**
-> *Inserte aquí una captura de pantalla de la página de Swagger mostrando la lista de endpoints.*
-
-## 8. Conclusiones
-
-Este proyecto demuestra la implementación efectiva de una API REST moderna utilizando el ecosistema de Node.js. La arquitectura modular facilita el mantenimiento y la escalabilidad futura, permitiendo agregar nuevas funcionalidades sin afectar el núcleo del sistema. La integración de seguridad con JWT y la documentación con Swagger aseguran que la API sea tanto segura como fácil de integrar para desarrolladores frontend.
+La integración con Resend ha sido exitosa, dotando a la API de la capacidad de enviar notificaciones por correo electrónico de manera eficiente y segura. El código implementado es robusto, incluye validaciones de datos y manejo de errores para asegurar la estabilidad del servicio.
